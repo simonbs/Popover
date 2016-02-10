@@ -19,6 +19,7 @@ public enum PopoverOption {
   case Type(Popover.PopoverType)
   case Color(UIColor)
   case OverlayFrame(CGRect)
+  case ArrowColor(UIColor)
 }
 
 public class Popover: UIView {
@@ -39,7 +40,8 @@ public class Popover: UIView {
   private var overlayBlur: UIBlurEffect?
   private var popoverColor: UIColor = UIColor.whiteColor()
   private var overlayFrame: CGRect?
-
+  private var arrowColor: UIColor?
+    
   // custom closure
   private var didShowHandler: (() -> ())?
   private var didDismissHandler: (() -> ())?
@@ -100,6 +102,8 @@ public class Popover: UIView {
           self.popoverColor = value
         case let .OverlayFrame(value):
           self.overlayFrame = value
+        case let .ArrowColor(value):
+          self.arrowColor = value
         }
       }
     }
@@ -255,7 +259,7 @@ public class Popover: UIView {
   override public func drawRect(rect: CGRect) {
     super.drawRect(rect)
     let arrow = UIBezierPath()
-    let color = self.popoverColor
+    let color = self.arrowColor ?? self.popoverColor
     let arrowPoint = self.containerView.convertPoint(self.arrowShowPoint, toView: self)
     switch self.popoverType {
     case .Up:
