@@ -259,7 +259,7 @@ public class Popover: UIView {
   override public func drawRect(rect: CGRect) {
     super.drawRect(rect)
     let arrow = UIBezierPath()
-    let color = self.arrowColor ?? self.popoverColor
+    let background = UIBezierPath()
     let arrowPoint = self.containerView.convertPoint(self.arrowShowPoint, toView: self)
     switch self.popoverType {
     case .Up:
@@ -267,34 +267,34 @@ public class Popover: UIView {
       arrow.addLineToPoint(
         CGPoint(
           x: arrowPoint.x - self.arrowSize.width * 0.5,
-          y: isCornerLeftArrow() ? self.arrowSize.height : self.bounds.height - self.arrowSize.height
-        )
-      )
-
-      arrow.addLineToPoint(CGPoint(x: self.cornerRadius, y: self.bounds.height - self.arrowSize.height))
-      arrow.addArcWithCenter(
+          y: isCornerLeftArrow() ? self.arrowSize.height : self.bounds.height - self.arrowSize.height))
+      arrow.addLineToPoint(
+        CGPoint(
+          x: arrowPoint.x + self.arrowSize.width * 0.5,
+          y: isCornerLeftArrow() ? self.arrowSize.height : self.bounds.height - self.arrowSize.height))
+      arrow.closePath()
+      
+      background.addArcWithCenter(
         CGPoint(
           x: self.cornerRadius,
-          y: self.bounds.height - self.arrowSize.height - self.cornerRadius
-        ),
+          y: self.bounds.height - self.arrowSize.height - self.cornerRadius),
         radius: self.cornerRadius,
         startAngle: self.radians(90),
         endAngle: self.radians(180),
         clockwise: true)
 
-      arrow.addLineToPoint(CGPoint(x: 0, y: self.cornerRadius))
-      arrow.addArcWithCenter(
+      background.addLineToPoint(CGPoint(x: 0, y: self.cornerRadius))
+      background.addArcWithCenter(
         CGPoint(
           x: self.cornerRadius,
-          y: self.cornerRadius
-        ),
+          y: self.cornerRadius),
         radius: self.cornerRadius,
         startAngle: self.radians(180),
         endAngle: self.radians(270),
         clockwise: true)
-
-      arrow.addLineToPoint(CGPoint(x: self.bounds.width - self.cornerRadius, y: 0))
-      arrow.addArcWithCenter(
+        
+      background.addLineToPoint(CGPoint(x: self.bounds.width - self.cornerRadius, y: 0))
+      background.addArcWithCenter(
         CGPoint(
           x: self.bounds.width - self.cornerRadius,
           y: self.cornerRadius
@@ -304,8 +304,8 @@ public class Popover: UIView {
         endAngle: self.radians(0),
         clockwise: true)
 
-      arrow.addLineToPoint(CGPoint(x: self.bounds.width, y: self.bounds.height - self.arrowSize.height - self.cornerRadius))
-      arrow.addArcWithCenter(
+      background.addLineToPoint(CGPoint(x: self.bounds.width, y: self.bounds.height - self.arrowSize.height - self.cornerRadius))
+      background.addArcWithCenter(
         CGPoint(
           x: self.bounds.width - self.cornerRadius,
           y: self.bounds.height - self.arrowSize.height - self.cornerRadius
@@ -314,20 +314,23 @@ public class Popover: UIView {
         startAngle: self.radians(0),
         endAngle: self.radians(90),
         clockwise: true)
-
-      arrow.addLineToPoint(CGPoint(x: arrowPoint.x + self.arrowSize.width * 0.5,
-        y: isCornerRightArrow() ? self.arrowSize.height : self.bounds.height - self.arrowSize.height))
-
+        
+      background.closePath()
     case .Down:
       arrow.moveToPoint(CGPoint(x: arrowPoint.x, y: 0))
       arrow.addLineToPoint(
         CGPoint(
-          x: arrowPoint.x + self.arrowSize.width * 0.5,
-          y: isCornerRightArrow() ? self.arrowSize.height + self.bounds.height : self.arrowSize.height
-        ))
+            x: arrowPoint.x + self.arrowSize.width * 0.5,
+            y: isCornerRightArrow() ? self.bounds.height - self.arrowSize.height : self.arrowSize.height))
+      arrow.addLineToPoint(CGPoint(
+        x: arrowPoint.x - self.arrowSize.width * 0.5,
+        y: isCornerRightArrow() ? self.bounds.height - self.arrowSize.height : self.arrowSize.height))
+      arrow.closePath()
+      
+      background.moveToPoint(CGPoint(x: arrowPoint.x, y: self.arrowSize.height))
+      background.addLineToPoint(CGPoint(x: self.bounds.width - self.cornerRadius, y: self.arrowSize.height))
 
-      arrow.addLineToPoint(CGPoint(x: self.bounds.width - self.cornerRadius, y: self.arrowSize.height))
-      arrow.addArcWithCenter(
+      background.addArcWithCenter(
         CGPoint(
           x: self.bounds.width - self.cornerRadius,
           y: self.arrowSize.height + self.cornerRadius
@@ -337,44 +340,45 @@ public class Popover: UIView {
         endAngle: self.radians(0),
         clockwise: true)
 
-      arrow.addLineToPoint(CGPoint(x: self.bounds.width, y: self.bounds.height - self.cornerRadius))
-      arrow.addArcWithCenter(
+      background.addLineToPoint(CGPoint(x: self.bounds.width, y: self.bounds.height - self.cornerRadius))
+      background.addArcWithCenter(
         CGPoint(
           x: self.bounds.width - self.cornerRadius,
-          y: self.bounds.height - self.cornerRadius
-        ),
+          y: self.bounds.height - self.cornerRadius),
         radius: self.cornerRadius,
         startAngle: self.radians(0),
         endAngle: self.radians(90),
         clockwise: true)
 
-      arrow.addLineToPoint(CGPoint(x: 0, y: self.bounds.height))
-      arrow.addArcWithCenter(
+      background.addLineToPoint(CGPoint(x: 0, y: self.bounds.height))
+      background.addArcWithCenter(
         CGPoint(
           x: self.cornerRadius,
-          y: self.bounds.height - self.cornerRadius
-        ),
+          y: self.bounds.height - self.cornerRadius),
         radius: self.cornerRadius,
         startAngle: self.radians(90),
         endAngle: self.radians(180),
         clockwise: true)
 
-      arrow.addLineToPoint(CGPoint(x: 0, y: self.arrowSize.height + self.cornerRadius))
-      arrow.addArcWithCenter(
-        CGPoint(x: self.cornerRadius,
-          y: self.arrowSize.height + self.cornerRadius
-        ),
+      background.addLineToPoint(CGPoint(x: 0, y: self.arrowSize.height + self.cornerRadius))
+      
+      background.addArcWithCenter(
+        CGPoint(
+          x: self.cornerRadius,
+          y: self.arrowSize.height + self.cornerRadius),
         radius: self.cornerRadius,
         startAngle: self.radians(180),
         endAngle: self.radians(270),
         clockwise: true)
-
-      arrow.addLineToPoint(CGPoint(x: arrowPoint.x - self.arrowSize.width * 0.5,
-        y: isCornerLeftArrow() ? self.arrowSize.height + self.bounds.height : self.arrowSize.height))
+      
+      background.closePath()
     }
 
-    color.setFill()
+    (arrowColor ?? popoverColor).setFill()
     arrow.fill()
+    
+    popoverColor.setFill()
+    background.fill()
   }
 
   private func isCornerLeftArrow() -> Bool {
