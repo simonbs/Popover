@@ -180,6 +180,7 @@ public class Popover: UIView {
     // Let the overlay control fill the entire size,
     // but let the overlay frame be configurable.
     let blackOverlayView = UIView()
+    blackOverlayView.userInteractionEnabled = false
     blackOverlayView.frame = overlayFrame ?? inView.bounds
     overlayControl.addSubview(blackOverlayView)
 
@@ -189,7 +190,7 @@ public class Popover: UIView {
       effectView.userInteractionEnabled = false
       self.overlayControl.addSubview(effectView)
     } else {
-      self.overlayControl.backgroundColor = self.blackOverlayColor
+      blackOverlayView.backgroundColor = self.blackOverlayColor
       self.overlayControl.alpha = 0
     }
 
