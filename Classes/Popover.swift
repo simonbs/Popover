@@ -18,6 +18,7 @@ public enum PopoverOption {
   case OverlayBlur(UIBlurEffectStyle)
   case Type(Popover.PopoverType)
   case Color(UIColor)
+  case OverlayFrame(CGRect)
 }
 
 public class Popover: UIView {
@@ -37,6 +38,7 @@ public class Popover: UIView {
   private var blackOverlayColor: UIColor = UIColor(white: 0.0, alpha: 0.2)
   private var overlayBlur: UIBlurEffect?
   private var popoverColor: UIColor = UIColor.whiteColor()
+  private var overlayFrame: CGRect?
 
   // custom closure
   private var didShowHandler: (() -> ())?
@@ -96,6 +98,8 @@ public class Popover: UIView {
           self.popoverType = value
         case let .Color(value):
           self.popoverColor = value
+        case let .OverlayFrame(value):
+          self.overlayFrame = value
         }
       }
     }
@@ -171,7 +175,7 @@ public class Popover: UIView {
 
   public func show(contentView: UIView, point: CGPoint, inView: UIView) {
     self.blackOverlay.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-    self.blackOverlay.frame = inView.bounds
+    self.blackOverlay.frame = overlayFrame ?? inView.bounds
 
     if let overlayBlur = self.overlayBlur {
       let effectView = UIVisualEffectView(effect: overlayBlur)
