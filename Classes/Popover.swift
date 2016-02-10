@@ -44,7 +44,7 @@ public class Popover: UIView {
   private var didShowHandler: (() -> ())?
   private var didDismissHandler: (() -> ())?
 
-  private var blackOverlay: UIControl = UIControl()
+  private var overlayControl: UIControl = UIControl()
   private var containerView: UIView!
   private var contentView: UIView!
   private var contentViewFrame: CGRect!
@@ -174,21 +174,27 @@ public class Popover: UIView {
   }
 
   public func show(contentView: UIView, point: CGPoint, inView: UIView) {
-    self.blackOverlay.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-    self.blackOverlay.frame = overlayFrame ?? inView.bounds
+    self.overlayControl.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+    self.overlayControl.frame = inView.bounds
+    
+    // Let the overlay control fill the entire size,
+    // but let the overlay frame be configurable.
+    let blackOverlayView = UIView()
+    blackOverlayView.frame = overlayFrame ?? inView.bounds
+    overlayControl.addSubview(blackOverlayView)
 
     if let overlayBlur = self.overlayBlur {
       let effectView = UIVisualEffectView(effect: overlayBlur)
-      effectView.frame = self.blackOverlay.bounds
+      effectView.frame = self.overlayControl.bounds
       effectView.userInteractionEnabled = false
-      self.blackOverlay.addSubview(effectView)
+      self.overlayControl.addSubview(effectView)
     } else {
-      self.blackOverlay.backgroundColor = self.blackOverlayColor
-      self.blackOverlay.alpha = 0
+      self.overlayControl.backgroundColor = self.blackOverlayColor
+      self.overlayControl.alpha = 0
     }
 
-    inView.addSubview(self.blackOverlay)
-    self.blackOverlay.addTarget(self, action: "dismiss", forControlEvents: .TouchUpInside)
+    inView.addSubview(self.overlayControl)
+    self.overlayControl.addTarget(self, action: "dismiss", forControlEvents: .TouchUpInside)
 
     self.containerView = inView
     self.contentView = contentView
@@ -224,7 +230,7 @@ public class Popover: UIView {
       delay: 0,
       options: .CurveLinear,
       animations: { () -> Void in
-        self.blackOverlay.alpha = 1
+        self.overlayControl.alpha = 1
       }, completion: { (_) -> Void in
     })
   }
@@ -235,10 +241,10 @@ public class Popover: UIView {
         options: .CurveEaseInOut,
         animations: {
           self.transform = CGAffineTransformMakeScale(0.0001, 0.0001)
-          self.blackOverlay.alpha = 0
+          self.overlayControl.alpha = 0
         }){ _ in
           self.contentView.removeFromSuperview()
-          self.blackOverlay.removeFromSuperview()
+          self.overlayControl.removeFromSuperview()
           self.removeFromSuperview()
           self.didDismissHandler?()
       }
